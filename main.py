@@ -1,21 +1,24 @@
 from src.f1_performance.session_loader import load_session
+from src.f1_performance.lap_selector import select_fastest_lap  
+from src.f1_performance.telemetry_loader import extract_telemetry
 
 def main():
 
-        session = load_session(
-            year=2025,
-            grand_prix="Monza",
-            session_type="Q"
-        )
+        session = load_session(2025, "Monza", "Q")
 
-        print("\nSESSION INFORMATION")
-        print("-------------------")
-        print("Event:", session.event["EventName"])
-        print("Session:", session.name)
-        print("Number of laps:", len(session.laps))
+        drivers = ["VER", "LEC"]
 
-        print("\nDRIVERS")
-        print(session.laps["Driver"].dropna().unique())            
+        for driver in drivers:
+              lap = select_fastest_lap(session, driver)
+              telemetry = extract_telemetry(lap)
+
+              print(f"\nDRIVER: {driver}")
+              print(f"Lap number: {lap['LapNumber']}")
+              print(f"Lap time: {lap['LapTime']}")
+              print(f"Telemetry samples: {len(telemetry)}")
+
+              print("\nFirst 5 telemetry samples:")
+              print(telemetry.head())
 
 if __name__ == "__main__":
     main()  
